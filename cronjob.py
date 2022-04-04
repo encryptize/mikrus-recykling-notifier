@@ -20,20 +20,18 @@ TEXT_NOTHING = ["Wygląda na to, że dzisiaj żaden Mikrus nie znajduje się na 
 
 def get_offers() -> list:
     response = requests.get(MIKRUS_OFFERS)
+    response.raise_for_status()
 
-    if response.status_code == 200:
-        if 'Baza jest aktualnie pusta' not in response.text:
-            servers = []
-            for line in response.text.splitlines():
-                srv_raw = line.replace("dni=", "").split(";")
-                srv_json = {"id": srv_raw[0], "version": srv_raw[1], "param": srv_raw[2], "days": f"{srv_raw[3]} dni"}
-                servers.append(srv_json)
+    if 'Baza jest aktualnie pusta' not in response.text:
+        servers = []
+        for line in response.text.splitlines():
+            srv_raw = line.replace("dni=", "").split(";")
+            srv_json = {"id": srv_raw[0], "version": srv_raw[1], "param": srv_raw[2], "days": f"{srv_raw[3]} dni"}
+            servers.append(srv_json)
             
-            return sorted(servers, key=lambda srv: srv['version'], reverse=True)
-        else:
-            return []
+        return sorted(servers, key=lambda srv: srv['version'], reverse=True)
     else:
-        raise requests.models.HTTPError
+        return []
 
 def generate_message(offers_list: list) -> str:
     if offers_list:
