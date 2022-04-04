@@ -44,9 +44,9 @@ def generate_message(offers_list: list) -> str:
     else:
         return f"<b>{random.choice(TEXT_NOTHING)}</b>"
 
-def send_message(message_text: str, disable_notification: bool = False):
+def send_message(message_text: str, enable_notification: bool = True):
     body = {"chat_id": CHANNEL_ID, "parse_mode": "HTML", "text": message_text, "disable_web_page_preview": True}
-    if disable_notification:
+    if not enable_notification:
         body["disable_notification"] = True
 
     requests.post(TELEGRAM_URL.format(BOT_TOKEN), body)
@@ -59,5 +59,5 @@ if __name__ == "__main__":
     logger.info("Starting to check offers")
     offers = get_offers()
     text = generate_message(offers)
-    send_message(message_text=text, disable_notification=True if not offers else False)
+    send_message(message_text=text, enable_notification=bool(offers))
     logger.info("Task finished!")
