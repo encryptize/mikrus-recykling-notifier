@@ -1,0 +1,10 @@
+version: '2.4'
+
+services:
+ bot:
+   build: https://github.com/Encryptize/mikrus-recykling-notifer.git
+   restart: unless-stopped
+   environment:
+    - BOT_TOKEN=000000:xxxxxxxxxxxxxxxxxxxx
+    - CHANNEL_ID=-000000000000
+    - TZ=Europe/Warsaw
