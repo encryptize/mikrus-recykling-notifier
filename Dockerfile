@@ -16,7 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Add crontab file in the cron directory
 ADD crontab /etc/cron.d/mikrus
-RUN chmod 0644 /etc/cron.d/mikrus && touch /var/log/cron.log
+RUN chmod 0644 /etc/cron.d/mikrus && \
+    touch /var/log/cron.log && \
+    crontab /etc/cron.d/mikrus
 
 # Install cron script
 COPY . ./
