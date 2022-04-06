@@ -44,12 +44,15 @@ def generate_message(offers_list: list) -> str:
     else:
         return f"**{random.choice(TEXT_NOTHING)}**"
 
-def send_message(message_text: str, enable_notification: bool = True):
-    body = {"chat_id": CHANNEL_ID, "text": message_text, "disable_web_page_preview": True}
-    if not enable_notification:
-        body["disable_notification"] = True
+def tg_send_message(message_text: str, disable_notification: bool = False):
+    query = {
+        "chat_id": CHANNEL_ID, 
+        "text": message_text, 
+        "disable_web_page_preview": True,
+        "disable_notification": disable_notification
+    }
 
-    requests.post(TELEGRAM_URL.format(BOT_TOKEN), body)
+    requests.post(TELEGRAM_URL.format(BOT_TOKEN), query)
 
 if __name__ == "__main__":
     if not BOT_TOKEN and not CHANNEL_ID:
@@ -59,5 +62,5 @@ if __name__ == "__main__":
     logger.info("Starting to check offers")
     offers = get_offers()
     text = generate_message(offers)
-    send_message(message_text=text, enable_notification=bool(offers))
+    tg_send_message(message_text=text, disable_notification=bool(not offers))
     logger.info("Task finished!")
