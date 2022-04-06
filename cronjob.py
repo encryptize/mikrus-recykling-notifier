@@ -4,13 +4,15 @@ import os
 import random
 import logging
 import requests
+import json
 
 # enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
-CHANNEL_ID = os.environ.get("CHANNEL_ID", None)
+TG_TOKEN = os.environ.get("TG_TOKEN", None)
+TG_CHANNEL_ID = os.environ.get("TG_CHANNEL_ID", None)
+DSC_WEBHOOK = os.environ.get("DSC_WEBHOOK", None)
 
 MIKRUS_OFFERS = "https://mikr.us/recykling.txt"
 TELEGRAM_URL = "https://api.telegram.org/bot{0}/sendMessage"
@@ -46,21 +48,38 @@ def generate_message(offers_list: list) -> str:
 
 def tg_send_message(message_text: str, disable_notification: bool = False):
     query = {
-        "chat_id": CHANNEL_ID, 
+        "chat_id": TG_CHANNEL_ID, 
         "text": message_text, 
         "disable_web_page_preview": True,
         "disable_notification": disable_notification
     }
 
-    requests.post(TELEGRAM_URL.format(BOT_TOKEN), query)
+    requests.post(TELEGRAM_URL.format(TG_TOKEN), query)
 
-if __name__ == "__main__":
-    if not BOT_TOKEN and not CHANNEL_ID:
-        logger.error("You need to provide bot token and channel ID for bot! Quitting...")
-        exit(1)
-    
+def dsc_send_message(message_text: str):
+    query = {
+        "username": "Mikrusowy recykling",
+        "avatar_url": "",
+        "content": message_text,
+        "embeds": [],
+        "components": []
+    }
+
+    requests.post(DSC_WEBHOOK, data=json.dumps(query), headers={'Content-Type': 'application/json'})
+
+if __name__ == "__main__":    
     logger.info("Starting to check offers")
     offers = get_offers()
     text = generate_message(offers)
-    tg_send_message(message_text=text, disable_notification=bool(not offers))
+    
+    if TG_TOKEN and TG_CHANNEL_ID:
+        tg_send_message(message_text=text, disable_notification=bool(not offers))
+    else:
+        logger.warning("Credentials not provided for Telegram")
+
+    if DSC_WEBHOOK:
+        dsc_send_message(message_text=text)
+    else:
+        logger.warning("Credentials not provided for Discord")
+    
     logger.info("Task finished!")
