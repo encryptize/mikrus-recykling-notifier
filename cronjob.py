@@ -35,17 +35,17 @@ def get_offers() -> list:
 
 def generate_message(offers_list: list) -> str:
     if offers_list:
-        message = f"<b>{random.choice(TEXT_OFFERS)}</b>\n\n"
+        message = f"**{random.choice(TEXT_OFFERS)}**\n\n"
         for offer in offers_list:
             srv = " | ".join(str(x[1]) for x in offer.items())
-            message += f"- <code>{srv}</code>,\n"
+            message += f"- `{srv}`,\n"
         message += "\nLink do recyklingu: https://mikr.us/recykling.html"
         return message
     else:
-        return f"<b>{random.choice(TEXT_NOTHING)}</b>"
+        return f"**{random.choice(TEXT_NOTHING)}**"
 
 def send_message(message_text: str, enable_notification: bool = True):
-    body = {"chat_id": CHANNEL_ID, "parse_mode": "HTML", "text": message_text, "disable_web_page_preview": True}
+    body = {"chat_id": CHANNEL_ID, "text": message_text, "disable_web_page_preview": True}
     if not enable_notification:
         body["disable_notification"] = True
 
