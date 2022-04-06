@@ -48,7 +48,8 @@ def generate_message(offers_list: list) -> str:
 
 def tg_send_message(message_text: str, disable_notification: bool = False):
     query = {
-        "chat_id": TG_CHANNEL_ID, 
+        "chat_id": TG_CHANNEL_ID,
+        "parse_mode": "Markdown",
         "text": message_text, 
         "disable_web_page_preview": True,
         "disable_notification": disable_notification
