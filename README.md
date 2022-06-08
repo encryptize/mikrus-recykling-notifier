@@ -23,7 +23,7 @@ docker build -t encryptize/mikrus-recykling-notifier .
 # W katalogu "data" wypełnij odpowiednio config z example-config.yml i nazwij go config.yml
 docker run -d --name=recykling_cron \
 -e TZ=Europe/Warsaw \
--v $(pwd)/data:/app/data \
+-v $(pwd)/data:/config \
 --restart unless-stopped \
 encryptize/mikrus-recykling-notifier
 ```

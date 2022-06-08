@@ -70,7 +70,7 @@ def dsc_send_message(message_text: str, offers_list: list) -> None:
     requests.post(dsc_webhook, data=json.dumps(query), headers={'Content-Type': 'application/json'})
 
 if __name__ == "__main__":
-    with open("data/config.yml", "r", encoding="utf-8") as f:
+    with open("/config/config.yml", "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     logger.info("Starting to check offers")
