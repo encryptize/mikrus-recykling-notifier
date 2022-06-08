@@ -5,7 +5,6 @@ services:
    build: https://github.com/Encryptize/mikrus-recykling-notifer.git
    restart: unless-stopped
    environment:
-    - TG_TOKEN=000000:xxxxxxxxxxxxxxxxxxxx
-    - TG_CHANNEL_ID=-000000000000
-    - DSC_WEBHOOK=https://discord.com/api/webhooks/...
     - TZ=Europe/Warsaw
+   volumes:
+    - ./data:/app/data

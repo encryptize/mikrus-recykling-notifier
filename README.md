@@ -6,13 +6,13 @@ Prosty bot w Pythonie sprawdzający stan recyklingu Mikrusa
 ## Instalacja
 Do działania bota jest potrzebne:
 
- - Docker (po lekkich przeróbkach można używać bez, ale jest zalecany),
- - Bot API token do Telegrama (można go otrzymać [tutaj](https://t.me/botfather))
- - ID kanału, na którym ma być robiony announce
+ - Docker (zalecany, ale można używać bez),
+ - W zależności od platformy odpowiednie dane do możliwości wysyłania powiadomienia
 ### docker-compose (zalecany)
 ```bash
 wget https://raw.githubusercontent.com/Encryptize/mikrus-recykling-notifier/master/docker-compose.yaml
-# Podmień zmienne w pliku na własne
+# Utwórz katalog "data", i wyypełnij w nim odpowiednio config z example-config.yml
+# zmieniając jego nazwę na config.yml
 docker-compose up -d
 ```
 
@@ -20,10 +20,10 @@ docker-compose up -d
 ```bash
 git clone https://github.com/Encryptize/mikrus-recykling-notifier.git && cd mikrus-recykling-notifier
 docker build -t encryptize/mikrus-recykling-notifier .
+# W katalogu "data" wypełnij odpowiednio config z example-config.yml i nazwij go config.yml
 docker run -d --name=recykling_cron \
--e BOT_TOKEN=000000:xxxxxxxxxxxxxxxxxxxx \
--e CHANNEL_ID=-000000000000
 -e TZ=Europe/Warsaw \
+-v $(pwd)/data:/app/data \
 --restart unless-stopped \
 encryptize/mikrus-recykling-notifier
 ```

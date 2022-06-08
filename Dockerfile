@@ -10,4 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 ADD . ./
 RUN /usr/bin/crontab /app/crontab
 
+VOLUME [ "/app/data" ]
 ENTRYPOINT [ "/app/entrypoint.sh" ]

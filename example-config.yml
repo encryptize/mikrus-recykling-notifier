@@ -1,0 +1,8 @@
+telegram_settings:
+ # You can get your own bot_token from: https://t.me/botfather
+ bot_token: 000000:xxxxxxxxxxxxxxxxxxxx
+ channel_id: -000000000000
+
+discord_settings:
+ webhook_url: https://discord.com/api/webhooks/...
+ mention_id: 000000000000
