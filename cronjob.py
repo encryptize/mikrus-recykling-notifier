@@ -75,6 +75,7 @@ def dsc_send_message(message_text: str, offers_list: list) -> None:
 def init_pseudo_db() -> None:
     if not os.path.isfile("/config/data.json"):
         with open("/config/data.json", "w", encoding="utf-8") as file_handler:
+            file_handler.write(json.dumps([]))
             file_handler.close()
 
 def execute_cron(force_announce: bool) -> None:
