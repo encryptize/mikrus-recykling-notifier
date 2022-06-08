@@ -1,2 +1,3 @@
-55 23     * * *    python /app/cronjob.py >> /var/log/cron.log
-
+55 23       * * *    python /app/cronjob.py --force-announce >> /var/log/cron.log
+5-54/5 *    * * *    python /app/cronjob.py >> /var/log/cron.log
+0 0         * * *    /bin/sh /app/clear.sh >> /var/log/cron.log

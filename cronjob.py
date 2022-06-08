@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import os
+import time
+import argparse
 import logging
 import json
 import yaml
@@ -69,22 +72,52 @@ def dsc_send_message(message_text: str, offers_list: list) -> None:
 
     requests.post(dsc_webhook, data=json.dumps(query), headers={'Content-Type': 'application/json'})
 
-if __name__ == "__main__":
-    with open("/config/config.yml", "r", encoding="utf-8") as f:
-        config = yaml.safe_load(f)
+def init_pseudo_db() -> None:
+    if not os.path.isfile("/config/data.json"):
+        with open("/config/data.json", "w", encoding="utf-8") as file_handler:
+            file_handler.close()
+
+def execute_cron(force_announce: bool) -> None:
+    known_offers = []
+
+    if not force_announce:
+        with open("/config/data.json", "r", encoding="utf-8") as file_handler:
+            known_offers = json.load(file_handler)
 
     logger.info("Starting to check offers")
     offers = get_offers()
-    text = generate_message(offers)
+    offers_to_annouce = [x for x in offers if x not in known_offers]
 
-    if config.get("telegram_settings", {}):
-        tg_send_message(message_text=text, disable_notification=bool(not offers))
+    if force_announce or offers_to_annouce:
+        logger.info("Number of offers to announce: %s", len(offers_to_annouce))
+        text = generate_message(offers_to_annouce)
+
+        if config.get("telegram_settings", {}):
+            tg_send_message(message_text=text, disable_notification=bool(not offers_to_annouce))
+        else:
+            logger.warning("Credentials not provided for Telegram")
+
+        if config.get("discord_settings", {}):
+            dsc_send_message(message_text=text, offers_list=offers_to_annouce)
+        else:
+            logger.warning("Credentials not provided for Discord")
+
+        with open("/config/data.json", "w", encoding="utf-8") as file_handler:
+            file_handler.write(json.dumps(offers))
+            file_handler.close()
+
     else:
-        logger.warning("Credentials not provided for Telegram")
+        logger.info("Nothing to announce!")
 
-    if config.get("discord_settings", {}):
-        dsc_send_message(message_text=text, offers_list=offers)
-    else:
-        logger.warning("Credentials not provided for Discord")
+if __name__ == "__main__":
+    start_time = time.time()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force-announce", help="Announce all available offers", action="store_true")
+    args = parser.parse_args()
 
-    logger.info("Task finished!")
+    with open("/config/config.yml", "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    init_pseudo_db()
+    execute_cron(args.force_announce)
+    logger.info("Task finished! Elapsed time: %ss", round(time.time() - start_time, 2))
