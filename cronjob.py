@@ -30,9 +30,13 @@ def get_offers() -> list:
     else:
         return []
 
-def generate_message(offers_list: list) -> str:
+def generate_message(offers_list: list, forced: bool) -> str:
     if offers_list:
-        message = "**Na dzisiejszy recykling oddano:**\n\n"
+        if forced:
+            message = "**Na dzisiejszy recykling oddano:**\n\n"
+        else:
+            message = "**Do dzisiejszej puli recyklingu dołącza:**\n\n"
+
         for offer in offers_list:
             srv = " | ".join(str(x[1]) for x in offer.items())
             message += f"- `{srv}`,\n"
@@ -91,7 +95,7 @@ def execute_cron(force_announce: bool) -> None:
 
     if force_announce or offers_to_annouce:
         logger.info("Number of offers to announce: %s", len(offers_to_annouce))
-        text = generate_message(offers_to_annouce)
+        text = generate_message(offers_to_annouce, forced=force_announce)
 
         if config.get("telegram_settings", {}):
             tg_send_message(message_text=text, disable_notification=bool(not offers_to_annouce))
